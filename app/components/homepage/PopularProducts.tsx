@@ -1,9 +1,9 @@
 /**
- * Popular Products - Suplementiplus v2
- * Horizontal scroll overflow, white cards, matches target
+ * Popular Products - Suplementiplus v3
+ * Left aligned with page, overflow to right edge
  * 
  * FILE: app/components/homepage/PopularProducts.tsx
- * VERSION: 2.0
+ * VERSION: 3.0
  */
 
 import {Link} from 'react-router';
@@ -19,8 +19,8 @@ export function PopularProducts({products}: PopularProductsProps) {
 
   return (
     <section className="w-full py-12 lg:py-16 bg-gray-50">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+      {/* Section Header - aligned with page */}
+      <div style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))', paddingRight: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl lg:text-4xl font-bold">Popularni proizvodi</h2>
           <Link
@@ -31,21 +31,31 @@ export function PopularProducts({products}: PopularProductsProps) {
             <span className="text-lg">›</span>
           </Link>
         </div>
+      </div>
 
-        {/* Horizontal Scroll - All screen sizes */}
-        <div className="overflow-x-auto scrollbar-hide -mx-4">
-          <div className="flex gap-4 px-4 pb-4">
-            {products.map((product, index) => (
-              <div 
-                key={`${product.id}-${product.popularVariant?.id || index}`} 
-                className="flex-none w-[280px]"
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+      {/* Products - overflow to right edge */}
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 pb-4" style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
+          {products.map((product, index) => (
+            <div 
+              key={`${product.id}-${product.popularVariant?.id || index}`} 
+              className="flex-none w-[280px]"
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
         </div>
       </div>
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </section>
   );
 }

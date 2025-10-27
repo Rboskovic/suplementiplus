@@ -1,9 +1,6 @@
 /**
- * Homepage Route - Suplementiplus v4
- * Added variant images to GraphQL query
- * 
- * FILE: app/routes/($locale)._index.tsx
- * VERSION: 4.0 - Final with variant images
+ * Homepage Route - Suplementiplus v5
+ * Gradient background wrapper, no main padding
  */
 
 import {type LoaderFunctionArgs} from 'react-router';
@@ -46,10 +43,10 @@ export default function Homepage() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
       <Header />
       
-      <main>
+      <main className="w-full">
         <Suspense fallback={<FeaturedProductsSkeleton />}>
           <Await resolve={data.featuredProducts}>
             {(response: any) => {
@@ -126,17 +123,17 @@ export default function Homepage() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
 
 function FeaturedProductsSkeleton() {
   return (
-    <section className="w-full py-8 lg:py-12 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <section className="w-full py-8 lg:py-12">
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex gap-5" style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="aspect-[3/4] bg-gray-200 rounded-2xl animate-pulse" />
+            <div key={i} className="flex-none w-[22vw] min-w-[320px] aspect-[3/4] bg-gray-200 rounded-[2rem] animate-pulse" />
           ))}
         </div>
       </div>
@@ -146,12 +143,14 @@ function FeaturedProductsSkeleton() {
 
 function PopularProductsSkeleton() {
   return (
-    <section className="w-full py-12 lg:py-16 bg-white">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-12 lg:py-16 bg-gray-50">
+      <div style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))', paddingRight: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
         <div className="h-10 bg-gray-200 rounded w-64 mb-8 animate-pulse" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      </div>
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 pb-4" style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="bg-gray-100 rounded-lg overflow-hidden">
+            <div key={i} className="flex-none w-[280px] bg-gray-100 rounded-lg overflow-hidden">
               <div className="aspect-square bg-gray-200 animate-pulse" />
               <div className="p-4 space-y-3">
                 <div className="h-4 bg-gray-200 rounded animate-pulse" />
@@ -167,8 +166,8 @@ function PopularProductsSkeleton() {
 
 function CollectionsSkeleton() {
   return (
-    <section className="w-full py-12 lg:py-16 bg-gray-50">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-12 lg:py-16">
+      <div style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))', paddingRight: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
         <div className="h-10 bg-gray-200 rounded w-64 mb-8 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
@@ -183,7 +182,7 @@ function CollectionsSkeleton() {
 function BlogSkeleton() {
   return (
     <section className="w-full py-12 lg:py-16 bg-primary text-white">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div style={{paddingLeft: 'max(1rem, calc((100vw - 1600px) / 2))', paddingRight: 'max(1rem, calc((100vw - 1600px) / 2))'}}>
         <div className="h-10 bg-white/20 rounded w-32 mx-auto mb-8 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (

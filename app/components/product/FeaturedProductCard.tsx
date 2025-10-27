@@ -1,11 +1,16 @@
 /**
  * Featured Product Card - Suplementiplus
  * Large cards for hero carousel with video/image backgrounds
+ * 
+ * Updates:
+ * - Increased card size (30vw on desktop)
+ * - Content positioned at top
+ * - Smaller text sizes
+ * - Black CTA button with "Kupi >"
  */
 
 import {Link} from 'react-router';
 import type {HomepageFeaturedMetafield} from '~/lib/types';
-import {Button} from '~/components/ui/button';
 
 interface FeaturedProductCardProps {
   product: {
@@ -24,7 +29,7 @@ export function FeaturedProductCard({
   return (
     <Link
       to={`/products/${product.handle}`}
-      className="group relative block aspect-[4/5] lg:aspect-[3/4] rounded-2xl overflow-hidden"
+      className="group relative block w-full aspect-[4/5] lg:aspect-[3/4] rounded-[2rem] overflow-hidden flex-shrink-0"
     >
       {/* Background Media */}
       <div className="absolute inset-0">
@@ -45,41 +50,37 @@ export function FeaturedProductCard({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         )}
-        {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Dark Gradient Overlay - lighter for better image visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
       </div>
 
-      {/* Content */}
-      <div className="relative h-full flex flex-col justify-end p-6 lg:p-8 text-white">
-        {/* Badge */}
-        {featuredData.badge && (
-          <span className="absolute top-6 left-6 px-3 py-1 text-xs font-bold bg-primary rounded-full uppercase tracking-wider">
-            {featuredData.badge}
-          </span>
-        )}
-
-        {/* Title */}
-        <h3 className="text-2xl lg:text-3xl font-bold mb-3 leading-tight">
-          {featuredData.title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-sm lg:text-base text-gray-200 mb-6 leading-relaxed max-w-md">
-          {featuredData.description}
-        </p>
-
-        {/* CTA Button */}
-        <div>
-          <Button
-            variant="green"
-            size="lg"
-            className="rounded-full font-semibold"
-            asChild
-          >
-            <span>
-              Kupi <span className="ml-1">›</span>
+      {/* Content - Top aligned with button at bottom */}
+      <div className="relative h-full flex flex-col justify-between p-6 lg:p-8 text-white">
+        {/* Top Section */}
+        <div className="pt-4">
+          {/* Badge */}
+          {featuredData.badge && (
+            <span className="inline-block px-3 py-1 text-xs font-bold bg-primary rounded-full uppercase tracking-wider mb-4">
+              {featuredData.badge}
             </span>
-          </Button>
+          )}
+
+          {/* Title - Smaller size */}
+          <h3 className="text-xl lg:text-2xl font-bold mb-2 leading-tight">
+            {featuredData.title}
+          </h3>
+
+          {/* Description - Smaller size */}
+          <p className="text-xs lg:text-sm text-gray-200 leading-relaxed max-w-xs">
+            {featuredData.description}
+          </p>
+        </div>
+
+        {/* CTA Button - Bottom, Black background */}
+        <div className="pb-2">
+          <button className="px-8 py-3 bg-black text-white rounded-full font-medium text-sm hover:bg-gray-900 transition-colors inline-flex items-center gap-1">
+            Kupi <span className="text-lg">›</span>
+          </button>
         </div>
       </div>
     </Link>

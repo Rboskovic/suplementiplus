@@ -1,7 +1,6 @@
 /**
- * Header Component - Suplementiplus
- * Responsive header with logo, navigation, and utility icons
- * Refactored to match VOXBERG design
+ * Header Component - Suplementiplus v2
+ * Transparent backdrop with blur for gradient page background
  */
 
 import {Link} from 'react-router';
@@ -12,10 +11,10 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+    <header className="sticky top-0 z-50 w-full backdrop-blur-sm bg-white/80">
       {/* Desktop Header */}
       <div className="hidden lg:block">
-        <div className="max-w-[1600px] mx-auto px-6 xl:px-8">
+        <div style={{paddingLeft: 'max(1.5rem, calc((100vw - 1600px) / 2))', paddingRight: 'max(1.5rem, calc((100vw - 1600px) / 2))'}}>
           {/* Single Row Navigation */}
           <div className="flex items-center justify-between py-5">
             {/* Far Left - Language/Currency Selector */}
@@ -31,14 +30,14 @@ export function Header() {
               </button>
             </div>
 
-            {/* Center Group - PRODUKTY + Logo + BLOG */}
+            {/* Center Group - Proizvodi + Logo + BLOG */}
             <div className="flex items-center gap-12">
-              {/* PRODUKTY Link */}
+              {/* Proizvodi Link */}
               <Link
                 to="/products"
                 className="text-sm font-bold uppercase tracking-wider text-gray-900 hover:text-gray-600 transition-colors"
               >
-                PRODUKTY
+                Proizvodi
               </Link>
 
               {/* Logo */}
@@ -171,7 +170,7 @@ export function Header() {
                   className="px-4 py-3 text-base font-medium hover:bg-gray-100 rounded-lg transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Produkty
+                  Proizvodi
                 </Link>
                 <Link
                   to="/articles"
