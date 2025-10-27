@@ -3,8 +3,9 @@
  * Main route file for the homepage with all sections
  */
 
-import {defer, type LoaderFunctionArgs, type MetaFunction} from 'react-router';
-import {Await} from 'react-router';
+import {type LoaderFunctionArgs} from 'react-router';
+import {Await, useLoaderData} from 'react-router';
+import type {MetaFunction} from 'react-router';
 import {Suspense} from 'react';
 import {Header} from '~/components/layout/Header';
 import {Footer} from '~/components/layout/Footer';
@@ -30,27 +31,18 @@ export const meta: MetaFunction = () => {
 export async function loader({context}: LoaderFunctionArgs) {
   const {storefront} = context;
 
-  // Featured Products Query
-  const featuredProductsQuery = storefront.query(FEATURED_PRODUCTS_QUERY);
-
-  // Popular Products Query
-  const popularProductsQuery = storefront.query(POPULAR_PRODUCTS_QUERY);
-
-  // Collections Query
-  const collectionsQuery = storefront.query(COLLECTIONS_QUERY);
-
-  // Blog Articles Query
-  const articlesQuery = storefront.query(ARTICLES_QUERY);
-
-  return defer({
-    featuredProducts: await featuredProductsQuery,
-    popularProducts: await popularProductsQuery,
-    collections: await collectionsQuery,
-    articles: await articlesQuery,
-  });
+  // Return raw objects with Promises - Single Fetch handles them automatically
+  return {
+    featuredProducts: storefront.query(FEATURED_PRODUCTS_QUERY),
+    popularProducts: storefront.query(POPULAR_PRODUCTS_QUERY),
+    collections: storefront.query(COLLECTIONS_QUERY),
+    articles: storefront.query(ARTICLES_QUERY),
+  };
 }
 
 export default function Homepage() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <>
       <Header />
@@ -58,15 +50,15 @@ export default function Homepage() {
       <main>
         {/* Featured Products Carousel */}
         <Suspense fallback={<FeaturedProductsSkeleton />}>
-          <Await resolve={(data) => data.featuredProducts}>
-            {(response) => {
+          <Await resolve={data.featuredProducts}>
+            {(response: any) => {
               const products = response?.products?.nodes || [];
               // Sort by sort_order if present
               const sortedProducts = products
-                .filter((p: any) => p.homepage_featured)
+                .filter((p: any) => p.homepage_featured?.value === 'true')
                 .sort((a: any, b: any) => {
-                  const orderA = getSortOrder(a.sort_order);
-                  const orderB = getSortOrder(b.sort_order);
+                  const orderA = getSortOrder(a.sort_order?.value);
+                  const orderB = getSortOrder(b.sort_order?.value);
                   return orderA - orderB;
                 })
                 .slice(0, 4);
@@ -78,11 +70,11 @@ export default function Homepage() {
 
         {/* Popular Products */}
         <Suspense fallback={<PopularProductsSkeleton />}>
-          <Await resolve={(data) => data.popularProducts}>
-            {(response) => {
+          <Await resolve={data.popularProducts}>
+            {(response: any) => {
               const products = response?.products?.nodes || [];
               const popularProducts = products.filter((p: any) =>
-                isPopularProduct(p.popular_product),
+                isPopularProduct(p.popular_product?.value),
               );
 
               return <PopularProducts products={popularProducts} />;
@@ -95,8 +87,8 @@ export default function Homepage() {
 
         {/* Collections Grid */}
         <Suspense fallback={<CollectionsSkeleton />}>
-          <Await resolve={(data) => data.collections}>
-            {(response) => {
+          <Await resolve={data.collections}>
+            {(response: any) => {
               const collections = response?.collections?.nodes || [];
               return <CollectionsGrid collections={collections} />;
             }}
@@ -105,8 +97,8 @@ export default function Homepage() {
 
         {/* Blog Section */}
         <Suspense fallback={<BlogSkeleton />}>
-          <Await resolve={(data) => data.articles}>
-            {(response) => {
+          <Await resolve={data.articles}>
+            {(response: any) => {
               const articles = response?.articles?.nodes || [];
               return <BlogSection articles={articles.slice(0, 6)} />;
             }}
