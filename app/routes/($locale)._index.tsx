@@ -15,7 +15,7 @@ import {ValuePropositions} from '~/components/homepage/ValuePropositions';
 import {CollectionsGrid} from '~/components/homepage/CollectionsGrid';
 import {BlogSection} from '~/components/homepage/BlogSection';
 import {FAQ} from '~/components/homepage/FAQ';
-import {getSortOrder, isPopularProduct} from '~/lib/types';
+import {getSortOrder, parseHomepageFeatured} from '~/lib/types';
 
 export const meta: MetaFunction = () => {
   return [
@@ -53,17 +53,23 @@ export default function Homepage() {
           <Await resolve={data.featuredProducts}>
             {(response: any) => {
               const products = response?.products?.nodes || [];
-              // Sort by sort_order if present
-              const sortedProducts = products
-                .filter((p: any) => p.homepage_featured?.value === 'true')
+              
+              // Filter products that have valid homepage_featured metafield
+              const featuredProducts = products
+                .filter((p: any) => {
+                  // Check if homepage_featured metafield exists and can be parsed
+                  const featuredData = parseHomepageFeatured(p.homepage_featured);
+                  return featuredData !== null;
+                })
                 .sort((a: any, b: any) => {
-                  const orderA = getSortOrder(a.sort_order?.value);
-                  const orderB = getSortOrder(b.sort_order?.value);
+                  // Sort by sort_order if present
+                  const orderA = getSortOrder(a.sort_order);
+                  const orderB = getSortOrder(b.sort_order);
                   return orderA - orderB;
                 })
                 .slice(0, 4);
 
-              return <FeaturedProductsCarousel products={sortedProducts} />;
+              return <FeaturedProductsCarousel products={featuredProducts} />;
             }}
           </Await>
         </Suspense>
@@ -73,9 +79,32 @@ export default function Homepage() {
           <Await resolve={data.popularProducts}>
             {(response: any) => {
               const products = response?.products?.nodes || [];
-              const popularProducts = products.filter((p: any) =>
-                isPopularProduct(p.popular_product?.value),
-              );
+              
+              // Filter products that have at least one variant with popular_product = true
+              const popularProducts = products
+                .filter((p: any) => {
+                  // Check if any variant has popular_product set to true
+                  return p.variants?.nodes?.some((v: any) => 
+                    v.popular_product?.value === 'true'
+                  );
+                })
+                .map((p: any) => {
+                  // Find the first popular variant for this product
+                  const popularVariant = p.variants.nodes.find((v: any) => 
+                    v.popular_product?.value === 'true'
+                  );
+                  
+                  return {
+                    ...p,
+                    // Attach the popular variant's sort order to the product
+                    variantSortOrder: getSortOrder(popularVariant?.sort_order),
+                    popularVariant, // Keep reference to the popular variant
+                  };
+                })
+                .sort((a: any, b: any) => {
+                  // Sort by variant sort_order
+                  return a.variantSortOrder - b.variantSortOrder;
+                });
 
               return <PopularProducts products={popularProducts} />;
             }}
@@ -133,10 +162,18 @@ function FeaturedProductsSkeleton() {
 function PopularProductsSkeleton() {
   return (
     <div className="container mx-auto px-4 py-12 lg:py-16">
-      <div className="h-10 w-64 bg-gray-200 rounded mb-8 animate-pulse" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="h-10 w-64 bg-gray-200 rounded animate-pulse" />
+        <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="aspect-square bg-gray-200 rounded-lg animate-pulse" />
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="bg-white rounded-lg p-4 space-y-4">
+            <div className="aspect-square bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-1/2" />
+          </div>
         ))}
       </div>
     </div>
@@ -146,12 +183,15 @@ function PopularProductsSkeleton() {
 function CollectionsSkeleton() {
   return (
     <div className="container mx-auto px-4 py-12 lg:py-16">
-      <div className="h-10 w-48 bg-gray-200 rounded mb-8 animate-pulse" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="h-10 w-48 bg-gray-200 rounded animate-pulse" />
+        <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="aspect-[3/4] bg-gray-200 rounded-2xl animate-pulse"
+            className="aspect-[4/5] lg:aspect-[3/4] bg-gray-200 rounded-2xl animate-pulse"
           />
         ))}
       </div>
@@ -161,23 +201,32 @@ function CollectionsSkeleton() {
 
 function BlogSkeleton() {
   return (
-    <div className="bg-primary py-16 lg:py-20">
-      <div className="container mx-auto px-4">
-        <div className="h-10 w-32 bg-white/20 rounded mx-auto mb-8 animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-white/10 rounded-xl h-80 animate-pulse"
-            />
+    <div className="container mx-auto px-4 py-12 lg:py-16">
+      <div className="text-center mb-8">
+        <div className="h-10 w-32 bg-gray-200 rounded animate-pulse mx-auto mb-4" />
+        <div className="flex justify-center gap-4 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
           ))}
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-lg overflow-hidden">
+            <div className="aspect-video bg-gray-200 animate-pulse" />
+            <div className="p-4 space-y-3">
+              <div className="h-4 bg-gray-200 rounded animate-pulse" />
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
+              <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-// GraphQL Queries
+// GraphQL Fragments and Queries
 const PRODUCT_FRAGMENT = `#graphql
   fragment ProductFragment on Product {
     id
@@ -196,7 +245,7 @@ const PRODUCT_FRAGMENT = `#graphql
         currencyCode
       }
     }
-    variants(first: 1) {
+    variants(first: 20) {
       nodes {
         id
         title
@@ -205,12 +254,15 @@ const PRODUCT_FRAGMENT = `#graphql
           currencyCode
         }
         availableForSale
+        popular_product: metafield(namespace: "custom", key: "popular_product") {
+          value
+        }
+        sort_order: metafield(namespace: "custom", key: "sort_order") {
+          value
+        }
       }
     }
     homepage_featured: metafield(namespace: "custom", key: "homepage_featured") {
-      value
-    }
-    popular_product: metafield(namespace: "custom", key: "popular_product") {
       value
     }
     sort_order: metafield(namespace: "custom", key: "sort_order") {
@@ -233,7 +285,7 @@ const FEATURED_PRODUCTS_QUERY = `#graphql
 const POPULAR_PRODUCTS_QUERY = `#graphql
   ${PRODUCT_FRAGMENT}
   query PopularProducts {
-    products(first: 20) {
+    products(first: 50) {
       nodes {
         ...ProductFragment
       }

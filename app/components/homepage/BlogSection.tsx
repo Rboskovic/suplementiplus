@@ -121,7 +121,7 @@ export function BlogSection({articles}: BlogSectionProps) {
             asChild
           >
             <Link to="/articles">
-              Prejsť na članke <span className="ml-1">›</span>
+              Pogledaj sve članke <span className="ml-1">›</span>
             </Link>
           </Button>
         </div>

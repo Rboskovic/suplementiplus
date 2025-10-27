@@ -303,13 +303,20 @@ export type ProductFragmentFragment = Pick<
       Pick<
         StorefrontAPI.ProductVariant,
         'id' | 'title' | 'availableForSale'
-      > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+      > & {
+        price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+        popular_product?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'value'>
+        >;
+        sort_order?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'value'>
+        >;
+      }
     >;
   };
   homepage_featured?: StorefrontAPI.Maybe<
     Pick<StorefrontAPI.Metafield, 'value'>
   >;
-  popular_product?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
   sort_order?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
 };
 
@@ -335,13 +342,18 @@ export type FeaturedProductsQuery = {
             Pick<
               StorefrontAPI.ProductVariant,
               'id' | 'title' | 'availableForSale'
-            > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+            > & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              popular_product?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
+              sort_order?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
+            }
           >;
         };
         homepage_featured?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        popular_product?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metafield, 'value'>
         >;
         sort_order?: StorefrontAPI.Maybe<
@@ -374,13 +386,18 @@ export type PopularProductsQuery = {
             Pick<
               StorefrontAPI.ProductVariant,
               'id' | 'title' | 'availableForSale'
-            > & {price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>}
+            > & {
+              price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+              popular_product?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
+              sort_order?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'value'>
+              >;
+            }
           >;
         };
         homepage_featured?: StorefrontAPI.Maybe<
-          Pick<StorefrontAPI.Metafield, 'value'>
-        >;
-        popular_product?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metafield, 'value'>
         >;
         sort_order?: StorefrontAPI.Maybe<
@@ -1273,7 +1290,7 @@ interface GeneratedQueryTypes {
     return: FeaturedProductsQuery;
     variables: FeaturedProductsQueryVariables;
   };
-  '#graphql\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    encodedVariantExistence\n    encodedVariantAvailability\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n  query PopularProducts {\n    products(first: 20) {\n      nodes {\n        ...ProductFragment\n      }\n    }\n  }\n': {
+  '#graphql\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    encodedVariantExistence\n    encodedVariantAvailability\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n  query PopularProducts {\n    products(first: 50) {\n      nodes {\n        ...ProductFragment\n      }\n    }\n  }\n': {
     return: PopularProductsQuery;
     variables: PopularProductsQueryVariables;
   };

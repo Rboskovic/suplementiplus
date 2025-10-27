@@ -11,6 +11,23 @@ export interface HomepageFeaturedMetafield {
   badge?: 'NEW' | 'BESTSELLER';
 }
 
+// Variant with custom metafields
+export interface VariantWithMetafields {
+  id: string;
+  title: string;
+  price: {
+    amount: string;
+    currencyCode: string;
+  };
+  availableForSale: boolean;
+  popular_product?: {
+    value: string; // "true" or "false"
+  };
+  sort_order?: {
+    value: string; // number as string
+  };
+}
+
 // Product with custom metafields
 export interface ProductWithMetafields {
   id: string;
@@ -30,26 +47,18 @@ export interface ProductWithMetafields {
     };
   };
   variants: {
-    nodes: Array<{
-      id: string;
-      title: string;
-      price: {
-        amount: string;
-        currencyCode: string;
-      };
-      availableForSale: boolean;
-    }>;
+    nodes: VariantWithMetafields[];
   };
-  // Custom metafields
+  // Custom metafields at product level
   homepage_featured?: {
     value: string; // JSON string, parse to HomepageFeaturedMetafield
-  };
-  popular_product?: {
-    value: string; // "true" or "false"
   };
   sort_order?: {
     value: string; // number as string
   };
+  // Optional fields added during processing
+  popularVariant?: VariantWithMetafields;
+  variantSortOrder?: number;
 }
 
 // Collection data structure
@@ -90,20 +99,34 @@ export function parseHomepageFeatured(
 ): HomepageFeaturedMetafield | null {
   if (!metafield?.value) return null;
   try {
-    return JSON.parse(metafield.value) as HomepageFeaturedMetafield;
+    const parsed = JSON.parse(metafield.value) as HomepageFeaturedMetafield;
+    // Validate that required fields exist
+    if (!parsed.media_url || !parsed.title || !parsed.description) {
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }
 }
 
-// Helper function to check if product is popular
-export function isPopularProduct(metafield?: {value: string}): boolean {
+// Helper function to check if variant is popular
+export function isPopularVariant(metafield?: {value: string}): boolean {
   return metafield?.value === 'true';
 }
 
-// Helper function to get sort order
+// Helper function to get sort order from metafield
 export function getSortOrder(metafield?: {value: string}): number {
   if (!metafield?.value) return 999;
   const order = parseInt(metafield.value, 10);
   return isNaN(order) ? 999 : order;
+}
+
+// Helper function to format price
+export function formatPrice(amount: string, currencyCode: string): string {
+  const price = parseFloat(amount);
+  return new Intl.NumberFormat('sr-RS', {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(price);
 }
