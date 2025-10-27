@@ -1,7 +1,9 @@
 /**
- * Product Card - Suplementiplus
- * Displays product information with add to cart button
- * Used in Popular Products section
+ * Product Card - Suplementiplus v2
+ * Uses variant image, white background, matches target design
+ * 
+ * FILE: app/components/product/ProductCard.tsx
+ * VERSION: 2.0
  */
 
 import {Link} from 'react-router';
@@ -14,25 +16,26 @@ interface ProductCardProps {
 }
 
 export function ProductCard({product}: ProductCardProps) {
-  // Use the popular variant if available, otherwise use first variant
   const displayVariant = product.popularVariant || product.variants.nodes[0];
   
-  // Format the price
   const formattedPrice = displayVariant 
     ? formatPrice(displayVariant.price.amount, displayVariant.price.currencyCode)
     : formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode);
 
+  // Use variant image if available, otherwise product featured image
+  const imageUrl = displayVariant?.image?.url || product.featuredImage?.url;
+  const imageAlt = displayVariant?.image?.altText || product.featuredImage?.altText || product.title;
+
   return (
-    <div className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      {/* Product Link */}
+    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <Link to={`/products/${product.handle}`} className="block">
-        {/* Product Image */}
-        <div className="aspect-square bg-gray-100 overflow-hidden">
-          {product.featuredImage ? (
+        {/* Product Image - Smaller aspect ratio */}
+        <div className="aspect-[4/3] bg-gray-50 overflow-hidden p-4">
+          {imageUrl ? (
             <img
-              src={product.featuredImage.url}
-              alt={product.featuredImage.altText || product.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              src={imageUrl}
+              alt={imageAlt}
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
           ) : (
@@ -45,13 +48,13 @@ export function ProductCard({product}: ProductCardProps) {
         {/* Product Info */}
         <div className="p-4">
           {/* Product Title */}
-          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="font-bold text-gray-900 mb-1 text-center">
             {product.title}
           </h3>
 
           {/* Variant Title (Size/Flavor) */}
           {displayVariant && displayVariant.title !== 'Default Title' && (
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-gray-600 mb-3 text-center">
               {displayVariant.title}
             </p>
           )}
@@ -62,11 +65,9 @@ export function ProductCard({product}: ProductCardProps) {
               {formattedPrice}
             </span>
             
-            {/* Add to Cart Button */}
             <button
               onClick={(e) => {
                 e.preventDefault();
-                // TODO: Implement add to cart functionality
                 console.log('Add to cart:', product.id, displayVariant?.id);
               }}
               className="w-10 h-10 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center transition-colors"
@@ -78,7 +79,7 @@ export function ProductCard({product}: ProductCardProps) {
 
           {/* Availability Badge */}
           {displayVariant && !displayVariant.availableForSale && (
-            <div className="mt-2">
+            <div className="mt-2 text-center">
               <span className="inline-block px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded">
                 Rasprodato
               </span>
